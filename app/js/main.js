@@ -2,9 +2,12 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     const dices = document.querySelectorAll(".dice"),
-        button = document.querySelector(".button"),
-        winner = document.querySelector(".winner");
+        rollBtn = document.querySelector(".button"),
+        winner = document.querySelector(".winner"),
+        board = document.querySelector(".board-wrapper"),
+        initBtn = document.querySelector(".board-start");
 
+    let round = 0;
 
     function Player(name, score, total) {
         this.name = name
@@ -15,65 +18,57 @@ document.addEventListener("DOMContentLoaded", function () {
     const player1 = new Player("Player 1", [], 0)
     const player2 = new Player("Player 2", [], 0)
 
-    button.addEventListener("click", function () {
-        play()
-
-        console.log(player1.score, player2.score);
-        console.log(player1.total, player2.total);
+    // Start button pressed
+    initBtn.addEventListener("click", function () {
+        board.classList.add("active")
+        this.style.display = "none"
     })
 
-    function play() {
+    // Roll button pressed
+    rollBtn.addEventListener("click", function () {
+        record(player1.score, player2.score)
+        round++;
 
-        update()
-        checkWinner(player1.score, player2.score)
+        if (round === 3) checkWinner(player1.score, player2.score)
 
-    }
+    })
 
-    function update() {
-        player1.score.push(generate(dices[0]))
-        player2.score.push(generate(dices[1]))
+    function record(arr1, arr2) {
+        arr1.push(generate(dices[0]))
+        arr2.push(generate(dices[1]))
     }
 
     function generate(dice) {
 
-
         dice.innerHTML = "";
 
         let num = Math.floor(Math.random() * 7);
-        if (num === 0) {
-            num++
-        }
+
+        if (num === 0) num++;
+
         for (let i = 0; i < num; i++) {
             dice.innerHTML += "<div class='circle'></div>";
         }
 
         return num;
-
     }
-
 
     function checkWinner(arr1, arr2) {
 
-        if (arr1.length === 3 && arr2.length === 3) {
-            player1.total = arr1.reduce((a, b) => a + b, 0)
-            player2.total = arr2.reduce((a, b) => a + b, 0)
+        player1.total = arr1.reduce((a, b) => a + b, 0)
+        player2.total = arr2.reduce((a, b) => a + b, 0)
 
-            if (player1.total > player2.total) {
-                winner.innerHTML = `${player1.name} wins!`
-            } else if (player1.total < player2.total) {
-                winner.innerHTML = `${player2.name} wins!`
-            } else {
-                winner.innerHTML = "Draw!"
-            }
+        rollBtn.style.display = "none"
+        winner.classList.add("active")
+
+        if (player1.total > player2.total) {
+            winner.innerHTML = `${player1.name} wins!`
+        } else if (player1.total < player2.total) {
+            winner.innerHTML = `${player2.name} wins!`
         } else {
-            return;
+            winner.innerHTML = "Draw!"
         }
 
-
-
     }
-
-
-
 
 })
